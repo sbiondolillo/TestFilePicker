@@ -27,7 +27,8 @@ public class CustomFileChooser extends JFileChooser {
 	    
 	}
 
-	@Override public File getSelectedFile() {
+	@Override 
+	public File getSelectedFile() {
     
 		File selectedFile = super.getSelectedFile();
 

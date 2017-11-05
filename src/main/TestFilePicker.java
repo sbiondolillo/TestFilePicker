@@ -4,12 +4,36 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 public class TestFilePicker {
 
 	public static void main(String[] args) {
 		
-		JFileChooser chooser = new JFileChooser("./bin");
+		// slightly modified version of code found at
+		// https://stackoverflow.com/questions/3651494/jfilechooser-with-confirmation-dialog
+		JFileChooser chooser = new JFileChooser("./bin"){
+			@Override
+		    public void approveSelection(){
+		        File f = getSelectedFile();
+		        if(f.exists() && getDialogType() == SAVE_DIALOG){
+		            int result = JOptionPane.showConfirmDialog(this,
+		            		"The file exists, overwrite?","Existing file",
+		            		JOptionPane.YES_NO_OPTION);
+		            switch(result){
+		                case JOptionPane.YES_OPTION:
+		                    super.approveSelection();
+		                    return;
+		                case JOptionPane.CANCEL_OPTION:
+		                    cancelSelection();
+		                    return;
+		                default:
+		                	return;		                
+		            }
+		        }
+		        super.approveSelection();
+		    }        
+		};
 		
 		int result = chooser.showOpenDialog(null);
 		
@@ -47,7 +71,7 @@ public class TestFilePicker {
             	
             	if (saveFile.exists()) {
             	
-            		System.out.println("Sorry, you can't write to this file!");
+            		System.out.println("Sorry, you don't have permission to write to this file!");
             		
             	} else {
             		
@@ -59,7 +83,7 @@ public class TestFilePicker {
             		}
             		catch (IOException e) {
             			
-            			System.out.println("Sorry, you won't be able to save to this file.");
+            			System.out.println("Sorry, there was an error trying to write to this file:" + e.getClass());
             		}
             		
             	}
@@ -70,7 +94,7 @@ public class TestFilePicker {
         	
         	System.out.println("Sorry, you didn't select a file to save.");
         	
-        }
+        }        
 
 	}
 
